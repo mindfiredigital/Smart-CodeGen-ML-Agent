@@ -1,0 +1,23 @@
+# Include configuration files
+include ml_analysis_agent/config/prompts.yaml
+
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+# Include requirements
+include requirements.txt
+
+# Exclude unnecessary files
+exclude .gitignore
+exclude .env
+exclude .env.example
+
+# Exclude test and development files
+recursive-exclude tests *
+recursive-exclude docs *
+recursive-exclude examples *
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store

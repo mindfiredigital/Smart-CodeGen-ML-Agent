@@ -1,0 +1,128 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml_analysis_agent"
+version = "0.1.0"
+description = "A Reusable multi-agent ML analysis library powered by AWS Bedrock and Claude"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Dipika Dhara", email = "dipikad@mindfiresolutions.com"}
+]
+keywords = ["machine-learning", "ml", "ai", "agents", "aws", "bedrock", "claude", "analysis", "data-science"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "boto3>=1.28.0",
+    "langchain>=0.3.0",
+    "langchain-aws>=0.2.0",
+    "langchain-core>=0.3.0",
+    "langgraph>=0.2.0",
+    "langgraph-supervisor",
+    "python-dotenv>=1.0.0",
+    "openpyxl>=3.1.0",
+    "xlrd>=2.0.0",
+    "pyarrow>=14.0.0",
+]
+
+[project.optional-dependencies]
+ml = [
+    "scikit-learn>=1.3.0",
+    "xgboost>=2.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.3",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+
+Homepage = "https://github.com/mindfiredigital/Smart-CodeGen-ML-Agent/"
+Documentation = "https://github.com/mindfiredigital/Smart-CodeGen-ML-Agent/README.md"
+Issues = "https://github.com/mindfiredigital/Smart-CodeGen-ML-Agent/issues"
+
+[project.scripts]
+ml-analysis = "ml_analysis_agent.cli:main"
+
+[tool.setuptools]
+packages = ["ml_analysis_agent"]
+
+[tool.setuptools.package-data]
+ml_analysis_agent = ["config/prompts.yaml"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''(
+  # Exclude git directory
+  (\/|\\)\.git\/
+  # Exclude virtual environment
+  |\.venv\/
+  # Exclude __pycache__
+  |__pycache__
+)'''
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.ruff]
+# Enable pycodestyle (`E`), Pyflakes (`F`), and isort (`I`) codes by default.
+select = ["E", "F", "I", "B", "C4", "UP", "N", "ANN", "S", "BLE", "A", "COM", "C4", "ICN", "G", "PIE", "T20"]
+ignore = ["E501"]  # Line too long (handled by black)
+
+# Same as Black.
+line-length = 100
+indent-width = 4
+
+# Assume Python 3.9
+target-version = "py39"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]  # Ignore unused imports in __init__.py files
+
+[tool.ruff.isort]
+known-first-party = ["ml_analysis_agent"]
+lines-between-types = 1
+combine-as-imports = true
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
