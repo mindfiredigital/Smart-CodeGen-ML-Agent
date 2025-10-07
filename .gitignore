@@ -84,6 +84,7 @@ ipython_config.py
 test_run*.py
 temp/
 testenv/
+logs/
 
 
 
