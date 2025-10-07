@@ -13,6 +13,9 @@ from .ml_analysis_manager import MLAnalysisManager
 from .config.file_config import FileConfig
 from .config.ml_config import MLConfig
 from .config.prompt_manager import PromptManager, get_prompt_manager
+from .utils.logger import get_main_logger
+
+logger = get_main_logger()
 
 
 # Create a user-friendly wrapper class
@@ -34,8 +37,10 @@ class MLAnalysisAgent:
         """Initialize the ML Analysis Agent."""
         import os
 
+        logger.info("Initializing ML Analysis Agent")
         self.ml_config = ml_config
         self._manager = MLAnalysisManager(self.ml_config)
+        logger.debug(f"ML config: {ml_config}")
 
         # Override directories if provided
         if output_dir:
@@ -64,9 +69,13 @@ class MLAnalysisAgent:
             bool: True if successful, False otherwise
 
         """
+        logger.info(f"Loading data from {file_path}")
         success, message = self._manager.load_data_file(file_path)
         if success:
             self._data_loaded = True
+            logger.info("Data loaded successfully")
+        else:
+            logger.error(f"Failed to load data: {message}")
         print(message)
         return success
 
@@ -82,9 +91,12 @@ class MLAnalysisAgent:
             str: The answer to the question
         """
         if not self._data_loaded:
+            logger.error("Attempted to ask question without loading data first")
             raise ValueError('No data loaded. Please load data using load_data() first.')
 
+        logger.info(f"Processing question: {question}")
         if not verbose:
+            logger.debug("Running in quiet mode")
             # Suppress intermediate output
             import sys
             import io
@@ -95,6 +107,8 @@ class MLAnalysisAgent:
         try:
             # Pass verbose flag to run_analysis
             result = self._manager.run_analysis(question, verbose=verbose)
+            logger.info("Question processed successfully")
+            logger.debug(f"Result: {result}")
 
             if not verbose:
                 sys.stdout = old_stdout
@@ -103,6 +117,7 @@ class MLAnalysisAgent:
         except Exception as e:
             if not verbose:
                 sys.stdout = old_stdout
+            logger.error(f"Error processing question: {str(e)}", exc_info=True)
             raise e
 
     def ask_stream(self, question: str):
@@ -182,9 +197,13 @@ class MLAnalysisAgent:
         Example:
             >>> agent.cleanup()
         """
+        logger.info("Cleaning up resources")
         if self._data_loaded:
             self._manager.file_manager.cleanup_data_folder()
             self._data_loaded = False
+            logger.info("Cleanup completed")
+        else:
+            logger.debug("No cleanup needed - no data was loaded")
 
     def __enter__(self):
         """Context manager entry."""
