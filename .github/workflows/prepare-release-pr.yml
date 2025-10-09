@@ -1,0 +1,50 @@
+name: Create PR from dev to main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: dev
+
+      - name: Set Git Identity
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Create Pull Request with gh cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # We're already on dev, just need to fetch main
+          git fetch origin main:refs/remotes/origin/main
+
+          # Check if there are differences between main and dev
+          DIFF_COUNT=$(git rev-list --count origin/main..HEAD)
+
+          if [ "$DIFF_COUNT" -gt 0 ]; then
+            echo "Differences found between main and dev. Creating PR..."
+            
+            # Use GitHub CLI to create the PR
+            gh pr create \
+              --base main \
+              --head dev \
+              --title "Merge dev into main" \
+              --body "This is an automated PR to merge changes from dev into main branch." || true
+              
+            echo "Pull request created or already exists."
+          else
+            echo "No differences found between main and dev. Skipping PR creation."
+          fi
