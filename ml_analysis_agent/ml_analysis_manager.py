@@ -36,6 +36,7 @@ class MLAnalysisManager:
 
     def pretty_print_message(self, message, indent=False):
         """Pretty print a single message."""
+        logger.info(f"Individual message from: {message}")
         pretty_message = message.pretty_repr(html=True)
         if not indent:
             print(pretty_message)
@@ -45,6 +46,7 @@ class MLAnalysisManager:
 
     def pretty_print_messages(self, update, last_message=False):
         """Pretty print messages from supervisor updates."""
+        logger.info(f"Processing update batch with last_message={last_message}")
         is_subgraph = False
         if isinstance(update, tuple):
             ns, update = update
@@ -70,7 +72,7 @@ class MLAnalysisManager:
                 self.pretty_print_message(m, indent=is_subgraph)
             print('\n')
 
-    def run_analysis(self, user_query: str, verbose: bool = False):
+    def run_analysis(self, user_query: str, verbose: bool = True):
         """Run ML analysis for a given user query."""
         logger.info(f"Starting analysis for query: {user_query}")
         logger.info(f"Q: {user_query}")
@@ -82,21 +84,14 @@ class MLAnalysisManager:
             user_query = f'{user_query} using dataset at {current_file}'
             logger.debug(f"Modified query with dataset path: {user_query}")
 
-        # Redirect stdout if not verbose
-        if not verbose:
-            import sys
-            import io
-
-            old_stdout = sys.stdout
-            sys.stdout = io.StringIO()
-
         try:
             start = time.time()
             final_result = None
-
             for chunk in self.supervisor_manager.stream(
                 {'messages': [{'role': 'user', 'content': user_query}]}
             ):
+                if verbose:
+                    self.pretty_print_messages(chunk, last_message=True)
                 final_result = chunk
 
             # Extract and return only the final content
@@ -119,11 +114,9 @@ class MLAnalysisManager:
 
             logger.warning("No result available from analysis")
             return 'No result available.'
-
-        finally:
-            # Restore stdout if we redirected it
-            if not verbose:
-                sys.stdout = old_stdout
+        except Exception as e:
+            logger.error(f"Error processing question: {str(e)}", exc_info=True)
+            raise e
 
     def load_data_file(self, file_path: str) -> tuple[bool, str]:
         """Load a data file."""

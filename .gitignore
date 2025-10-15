@@ -85,6 +85,10 @@ test_run*.py
 temp/
 testenv/
 logs/
+IPython
+graphs/
+results/
+
 
 
 

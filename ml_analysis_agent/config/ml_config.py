@@ -58,3 +58,36 @@ class AWSMLConfig(MLConfig):
                 max_tokens=4000,
             )
         return self._llm
+from langchain_openai import ChatOpenAI
+
+class OpenAIMLConfig(MLConfig):
+    """Configuration class for OpenAI settings."""
+    
+    def __init__(
+            self,
+            api_key: str = None,
+            model_name: str = None,
+            temperature: float = 0,
+            max_tokens: int = 4000
+        ):
+        self.OPENAI_API_KEY = api_key or os.getenv('OPENAI_API_KEY')
+        self.MODEL_NAME = model_name or os.getenv("OPENAI_MODEL_NAME", "gpt-4-turbo-preview")
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        
+        if not self.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY not found in .env file.")
+        
+        self._llm = None
+    
+    def get_llm_model(self):
+        """Get OpenAI LLM model instance (singleton pattern)."""
+        if self._llm is None:
+            self._llm = ChatOpenAI(
+                model=self.MODEL_NAME,
+                openai_api_key=self.OPENAI_API_KEY,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+            )
+        return self._llm
+

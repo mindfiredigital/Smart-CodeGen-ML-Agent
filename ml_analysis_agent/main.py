@@ -1,12 +1,20 @@
 """Main entry point for the ML Analysis System."""
 
 from ml_analysis_agent import MLAnalysisAgent
-from ml_analysis_agent.config.ml_config import AWSMLConfig
+from ml_analysis_agent.config.ml_config import AWSMLConfig, OpenAIMLConfig
 
 
 def main():
     """Main CLI interface."""
-    ml_config = AWSMLConfig()
+    llm_provider=input("Enter LLM provider (aws/openai): ").strip().lower()
+    if llm_provider == "aws":
+        ml_config = AWSMLConfig()
+    elif llm_provider == "openai":
+        # OpenAI Configuration
+        ml_config = OpenAIMLConfig()
+    else:
+        raise ValueError(f"Unsupported LLM provider: {llm_provider}")
+    # ml_config = AWSMLConfig()
     agent = MLAnalysisAgent(ml_config)
 
     print('🤖 Multi-Agent ML Analysis System Ready!')
