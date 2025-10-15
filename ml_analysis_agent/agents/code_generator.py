@@ -2,7 +2,7 @@
 
 from typing import List, Any
 from .base import BaseAgent
-from ..tools.csv_analyzer import csv_analyzer_tool
+from ..tools.data_analyzer import data_analyzer_tool
 from ..tools.code_saver import save_code_tool
 from ..config.prompt_manager import get_prompt_manager
 
@@ -22,7 +22,7 @@ class CodeGeneratorAgent(BaseAgent):
 
     def get_tools(self) -> List[Any]:
         """Get tools specific to code generation."""
-        return [csv_analyzer_tool, save_code_tool]
+        return [data_analyzer_tool, save_code_tool]
 
     def get_prompt(self) -> str:
         """Get the prompt for code generation."""
